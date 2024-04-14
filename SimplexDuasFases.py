@@ -1,3 +1,6 @@
+import re
+import numpy as np
+
 base_canonica1 = [
         #  X1   X2   X3   X4   X5   X6   XA   B  #
         [ 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 6.0 ],
@@ -18,7 +21,6 @@ base_canonica2 = [
         [ 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ],
         [-2.0,-3.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,-15.0],
 ]
-
 
 
 def PivoZ(base):
@@ -156,6 +158,8 @@ def Apresentar_Tabela(base):
 
 
 
-#Pivo(base_canonica2)
-Eliminacao_W(base_canonica2)
-Eliminacao_Z(base_canonica2)
+
+
+
+#Eliminacao_W(base_canonica2)
+#Eliminacao_Z(base_canonica2)
