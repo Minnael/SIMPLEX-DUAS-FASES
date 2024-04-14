@@ -16,51 +16,62 @@ base_string2 = """
   4|5|=|0|
 """
 
-
+# X=0 PARA MAXIMIZACAO  /  X=1 PARA MINIMIZACAO
 def CriandoVetores(base_string):
-   variaveis_padrao = int(input("DIGITE O NÚMERO DE VARIAVEIS: "))
-   variaveis_folga = []
-   base_canonica = []
+  variaveis_padrao = int(input("DIGITE O NÚMERO DE VARIAVEIS: "))
+  variaveis_folga = []
+  base_canonica = []
 
-   for base in base_string:
-     if base == "<":
+  for base in base_string:
+    if base == "<":
       variaveis_folga.append(1)
-     elif base == ">": 
+    elif base == ">": 
       variaveis_folga.append(-1)
 
-   numero_variaveis = len(variaveis_folga) + variaveis_padrao
+  numero_variaveis = len(variaveis_folga) + variaveis_padrao
 
-   for i in range(numero_variaveis-1):
-     componente = np.zeros(numero_variaveis+1)
-     base_canonica.append(componente)
+  for i in range(numero_variaveis-1):
+    componente = np.zeros(numero_variaveis+1)
+    base_canonica.append(componente)
 
-   componente_b = re.findall(r'[<>](-?\d+)', base_string)
-   componente_b = [float(num) for num in componente_b]
+  componente_b = re.findall(r'[<>](-?\d+)', base_string)
+  componente_b = [float(num) for num in componente_b]
 
-   numeros_componentes = []  
-   padrao = re.compile(r'(-?\d+)')
-   for linha in base_string.split('\n'):
-     numeros = padrao.findall(linha)
-     if numeros:
+  numeros_componentes = []  
+  padrao = re.compile(r'(-?\d+)')
+  for linha in base_string.split('\n'):
+    numeros = padrao.findall(linha)
+    if numeros:
       numeros_componentes.extend([float(num) for num in numeros[:-1]])  # Adicione todos os números exceto o último
 
-   aux = 0
-   for array in base_canonica:
+  aux = 0
+  for array in base_canonica:
     for i in range(variaveis_padrao):
       array[i] = numeros_componentes[aux]
       aux = aux + 1
 
-   aux = 0
-   for i in range(len(base_canonica)-1):
-      base_canonica[i][variaveis_padrao + aux] = variaveis_folga[aux]
-      aux = aux + 1
+  aux = 0
+  for i in range(len(base_canonica)-1):
+    base_canonica[i][variaveis_padrao + aux] = variaveis_folga[aux]
+    aux = aux + 1
 
-   aux = 0
-   for i in range(len(base_canonica)-1):
-      base_canonica[i][len(array)-1] = componente_b[aux]
-      aux = aux +1
+  aux = 0
+  for i in range(len(base_canonica)-1):
+    base_canonica[i][len(array)-1] = componente_b[aux]
+    aux = aux +1
 
-   return [-1 * elemento for elemento in componente_b], [-1 * array if i != len(base_canonica) - 1 else array for i, array in enumerate(base_canonica)]
+  x = 0
+  if x == 1:
+    return [-1 * array if i != len(base_canonica) - 1 else array for i, array in enumerate(base_canonica)]
+  
+  else:
+    base_canonica[-1] *= -1
+
+    for index, valor in enumerate(variaveis_folga):
+      if valor < 0:
+        base_canonica[index] *= -1
+    
+    return base_canonica
 
 
 
@@ -89,45 +100,42 @@ def PivoZ(base, componente_b):
 
 
 def Eliminacao_Z(base):
-   componente_b = []
+    componente_b = []
 
-   for array in base:
-     componente_b.append(array[len(array)-1])
+    for array in base:
+      componente_b.append(array[len(array)-1])
 
-   coordenadas_pivo = PivoZ(base, componente_b)
-   pivo = base[coordenadas_pivo[0]][coordenadas_pivo[1]]
+    coordenadas_pivo = PivoZ(base, componente_b)
+    pivo = base[coordenadas_pivo[0]][coordenadas_pivo[1]]
 
-   linha_pivo = base[coordenadas_pivo[0]]
-   ultima_linha = base[len(base)-1]
+    print(pivo)
 
-   if pivo != 1: 
-      for i in range(len(linha_pivo)):
-         linha_pivo[i] = linha_pivo[i]/pivo
-    
-   for linha in base:
-      linha_pivo_base = linha[coordenadas_pivo[1]]
-     
-      if (linha_pivo_base < 0).any() and not np.array_equal(linha, linha_pivo):
-        for i in range(len(linha)):
-          linha[i] = abs(linha_pivo_base)*linha_pivo[i] + linha[i] 
- 
-      elif (linha_pivo_base > 0).any() and not np.array_equal(linha, linha_pivo):
+    linha_pivo = base[coordenadas_pivo[0]]
+    ultima_linha = base[len(base)-1]
+
+    if pivo != 1: 
+        for i in range(len(linha_pivo)):
+          linha_pivo[i] = linha_pivo[i]/pivo
+      
+    for linha in base:
+        linha_pivo_base = linha[coordenadas_pivo[1]]
+      
+        if (linha_pivo_base < 0).any() and not np.array_equal(linha, linha_pivo):
           for i in range(len(linha)):
-            linha[i] = -linha_pivo_base*linha_pivo[i] + linha[i]
+            linha[i] = abs(linha_pivo_base)*linha_pivo[i] + linha[i] 
+  
+        elif (linha_pivo_base > 0).any() and not np.array_equal(linha, linha_pivo):
+            for i in range(len(linha)):
+              linha[i] = -linha_pivo_base*linha_pivo[i] + linha[i]
     
-   componente_b = []
-
-   #PROBLEMA NO CRITERIO DE PARADA
-
-   for array in base:
-     componente_b.append(array[len(array)-1])
-
-   for indice in range(len(componente_b)-1):
-     if componente_b[indice] < 0 and pivo != 0:
-       print("x")
-       Eliminacao_Z(base)
-   
-   Apresentar_Tabela(base)
+    
+    ultima_linha = base[len(base)-1]
+    
+    for valor in ultima_linha:
+      if valor < 0:
+        Eliminacao_Z(base)
+      
+    Apresentar_Tabela(base)
    
 
 
@@ -143,6 +151,5 @@ def Apresentar_Tabela(base):
 
 
 
-componente_b, base = CriandoVetores(base_string)
-#PivoZ(base, componente_b)
+base = CriandoVetores(base_string)
 Eliminacao_Z(base)
